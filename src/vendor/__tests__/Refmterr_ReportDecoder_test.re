@@ -19,6 +19,42 @@ let matcher = (~content, ~expected, ~print=false, ()) => {
   };
 };
 
+describe("Test parser", () =>
+  test("Something is cooking", () => {
+    let content = "let a: string = 0;";
+    let eResult = execute(content);
+
+    let expected =
+      ErrorContent({
+        filePath: "_none_",
+        cachedContent: [content],
+        range: ((0, 16), (0, 17)),
+        parsedContent:
+          Type_IncompatibleType({
+            term: Expression,
+            extra: "",
+            main: {
+              actual: ["int"],
+              expected: ["string"],
+            },
+            incompats: [],
+            escapedScope: None,
+          }),
+      });
+
+    switch (eResult) {
+    | Error(error) =>
+      let berror =
+        Refmterr_Index.parseFromRtop(
+          ~customErrorParsers=[],
+          ~content,
+          ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
+        );
+      Expect.(expect(berror) |> toEqual(expected));
+    | _ => raise(Invalid_argument("This code should have error"))
+    };
+  })
+);
 describe("Error", () => {
   test("Type_IncompatibleType", () => {
     let content = "let a: string = 0;";

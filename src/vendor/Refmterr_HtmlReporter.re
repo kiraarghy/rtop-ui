@@ -236,9 +236,7 @@ let prettyPrintParsedResult =
       ];
     }
   | ErrorContent(withFileInfo) =>
-    List.concat([
-      ReportError.report(~refmttypePath, withFileInfo.parsedContent),
-    ])
+    List.concat([ReportError.report(~refmttypePath, withFileInfo.parsedContent)])
   | Warning(withFileInfo) =>
     List.concat([
       ["", ""],
@@ -256,3 +254,10 @@ let prettyPrintParsedResult =
       [highlight(~dim=true, ~bold=true, "# Unformatted Warning Output:")],
     ])
   };
+
+let generateReport = (~content, parsedError) =>
+  prettyPrintParsedResult(~originalRevLines=content, ~refmttypePath=None, parsedError)
+  |. List.rev
+  |. Belt.List.reduce("", (line, acc) =>
+       line |> String.trim == "" ? acc : acc ++ "\n<p>" ++ line ++ "</p>"
+     );

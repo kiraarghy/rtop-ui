@@ -129,8 +129,13 @@ let make = _children => {
           | Ok(evaluate) => ResultOk(evaluate)
           | OkWithLog(evaluate, log) => ResultOk(evaluate ++ "\n" ++ log)
           | Error(error) =>
-            Js.log(Reason_Evaluator.parseError(~content=inputValue, ~error));
-            ResultError(error);
+            Refmterr_Index.parseFromRtop(
+              ~customErrorParsers=[],
+              ~content=inputValue,
+              ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
+            )
+            |> Refmterr_HtmlReporter.generateReport(~content=[inputValue])
+            |. ResultError
           };
         ReasonReact.Update({
           ...state,
@@ -153,18 +158,19 @@ let make = _children => {
             (
               state.displayStack
               |. Belt.Array.mapWithIndexU((. index, line) => {
-                   let (className, line) =
-                     switch (line) {
-                     | ResultOk(line) => (None, line)
-                     | ResultError(line) => (Some(lineError), line)
-                     | Welcome(line) => (Some(lineWelcome), line)
-                     | Input((line, syntax)) =>
-                       switch (syntax) {
-                       | Reason => (Some(lineInputRe), line)
-                       | Ml => (Some(lineInputMl), line)
-                       }
-                     };
-                   <div ?className key=(index |. string_of_int)> (line |. str) </div>;
+                   let simpleLine = ((className, line)) =>
+                     <div ?className key=(index |. string_of_int)> (line |. str) </div>;
+                   /* dangerouslySetInnerHTML */
+                   switch (line) {
+                   | ResultOk(line) => (None, line) |. simpleLine
+                   | ResultError(line) => <div dangerouslySetInnerHTML={"__html": line} />
+                   | Welcome(line) => (Some(lineWelcome), line) |. simpleLine
+                   | Input((line, syntax)) =>
+                     switch (syntax) {
+                     | Reason => (Some(lineInputRe), line) |. simpleLine
+                     | Ml => (Some(lineInputMl), line) |. simpleLine
+                     }
+                   };
                  })
               |. ReasonReact.array
             )
