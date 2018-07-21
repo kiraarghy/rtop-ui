@@ -176,13 +176,13 @@ module HtmlStylish = {
   let dim = s => {j|<span class="gray">$s</span>|j};
   let underline = s => {j|<span class="underline">$s</span>|j};
 
-  let makeColor = (~underline=false, ~invert=false, ~dim=false, ~bold=false, ~className=[], s) => {
-    let className = ref(className);
+  let makeColor = (~underline=false, ~invert=false, ~dim=false, ~bold=false, ~className="", s) => {
+    let className = ref([invert ? "bg-" ++ className : className]);
     if (underline) {
       className := ["underline", ...className^];
     };
     if (dim) {
-      className := ["gray", ...className^];
+      className := [invert ? "bg-gray" : "gray", ...className^];
     };
     if (bold) {
       className := ["b", ...className^];
@@ -197,32 +197,32 @@ module HtmlStylish = {
   };
 
   let red = (~underline=false, ~invert=false, ~dim=false, ~bold=false, s) => {
-    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className=["red"], s);
+    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className="red", s);
     {j|<span class="$(className)">$s</span>|j};
   };
 
   let yellow = (~underline=false, ~invert=false, ~dim=false, ~bold=false, s) => {
-    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className=["yellow"], s);
+    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className="yellow", s);
     {j|<span class="$(className)">$s</span>|j};
   };
 
   let blue = (~underline=false, ~invert=false, ~dim=false, ~bold=false, s) => {
-    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className=["blue"], s);
+    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className="blue", s);
     {j|<span class="$(className)">$s</span>|j};
   };
 
   let green = (~underline=false, ~invert=false, ~dim=false, ~bold=false, s) => {
-    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className=["green"], s);
+    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className="green", s);
     {j|<span class="$(className)">$s</span>|j};
   };
 
   let cyan = (~underline=false, ~invert=false, ~dim=false, ~bold=false, s) => {
-    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className=["light-blue"], s);
+    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className="light-blue", s);
     {j|<span class="$(className)">$s</span>|j};
   };
 
   let purple = (~underline=false, ~invert=false, ~dim=false, ~bold=false, s) => {
-    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className=["purple"], s);
+    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className="purple", s);
     {j|<span class="$(className)">$s</span>|j};
   };
 

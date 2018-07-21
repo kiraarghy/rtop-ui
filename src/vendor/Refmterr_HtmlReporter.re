@@ -63,7 +63,7 @@ let _printFile =
   /*
    * TODO: Create a better vertical separator for the second case.
    */
-  let sep = minIndent === 0 ? " ┆ " : " ┆ ";
+  let sep = minIndent === 0 ? " | " : " | ";
   let startColumn = startColumn - minIndent;
   let endColumn = endColumn - minIndent;
   /* Sometimes a file based error will have start=end column == 0 */
@@ -236,20 +236,21 @@ let prettyPrintParsedResult =
       ];
     }
   | ErrorContent(withFileInfo) =>
-    List.concat([ReportError.report(~refmttypePath, withFileInfo.parsedContent)])
+    List.concat([
+      ReportError.report(~refmttypePath, withFileInfo.parsedContent),
+      printFile(withFileInfo),
+      indent(dim("# "), List.map(dim, originalRevLines)),
+      [highlight(~dim=true, ~bold=true, "# Unformatted Error Output:")],
+    ])
   | Warning(withFileInfo) =>
     List.concat([
-      ["", ""],
       ReportWarning.report(
         ~refmttypePath,
         withFileInfo.parsedContent.code,
         withFileInfo.filePath,
         withFileInfo.parsedContent.warningType,
       ),
-      [""],
       printFile(~isWarningWithCode=withFileInfo.parsedContent.code, withFileInfo),
-      [""],
-      [""],
       indent(dim("# "), List.map(dim, originalRevLines)),
       [highlight(~dim=true, ~bold=true, "# Unformatted Warning Output:")],
     ])
@@ -257,4 +258,5 @@ let prettyPrintParsedResult =
 
 let generateReport = (~content, parsedError) =>
   prettyPrintParsedResult(~originalRevLines=content, ~refmttypePath=None, parsedError)
+  |. Belt.List.reverse
   |> Refmterr_Stylish.HtmlStylish.concatList("");
