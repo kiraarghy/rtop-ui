@@ -2,6 +2,8 @@ open BetterErrorsTypes;
 
 open Refmterr_Helpers;
 
+open! Refmterr_Stylish.HtmlStylish;
+
 let suggestifyList = suggestions => suggestions |> List.map(sug => yellow("- " ++ sug));
 
 let refmttypeNewlineR = Re.Pcre.regexp({|\\n|});

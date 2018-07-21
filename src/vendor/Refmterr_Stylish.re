@@ -3,7 +3,7 @@ module type StylishSig = {
 
   /* Helper functions */
   let empty: t;
-  let concat: (t, list(t)) => t;
+  let concatList: (t, list(t)) => t;
   /* Styling */
   let bold: string => t;
   let invert: string => t;
@@ -34,7 +34,7 @@ module type StylishSig = {
 module ANSIStylish: StylishSig = {
   type t = string;
   let empty = "";
-  let concat = String.concat;
+  let concatList = String.concat;
 
   let resetANSI = "\027[0m";
 
@@ -159,10 +159,10 @@ module ANSIStylish: StylishSig = {
     ++ stringSlice(~first=last, str);
 };
 
-module HtmlStylish: StylishSig = {
+module HtmlStylish = {
   type t = string;
   let empty = "";
-  let concat = String.concat;
+  let concatList = String.concat;
 
   let bold = s => {j|<span class="b">$s</span>|j};
 
