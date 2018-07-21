@@ -16,26 +16,27 @@ let replaceDollar = s =>
 
 let normalizeType = s => Re.Pcre.substitute(~rex=gadtR, ~subst=replaceDollar, s);
 
-let toReasonTypes = (~refmttypePath, types) =>
-  switch (refmttypePath) {
-  | None => types
-  | Some(path) =>
-    let types = String.concat("\\\"", List.map(normalizeType, types));
-    let cmd = path ++ (sp({| "%s"|}))(types);
-    let input = Unix.open_process_in(cmd);
-    let result = {contents: []};
-    try (
-      while (true) {
-        result.contents = [
-          Re.Pcre.substitute(~rex=refmttypeNewlineR, ~subst=_ => "\n", input_line(input)),
-          ...result.contents,
-        ];
-      }
-    ) {
-    | End_of_file => ignore(Unix.close_process_in(input))
-    };
-    List.rev(result^);
-  };
+let toReasonTypes = (~refmttypePath, types) => types;
+/* let toReasonTypes = (~refmttypePath, types) =>
+   switch (refmttypePath) {
+   | None => types
+   | Some(path) =>
+     let types = String.concat("\\\"", List.map(normalizeType, types));
+     let cmd = path ++ (sp({| "%s"|}))(types);
+     let input = Unix.open_process_in(cmd);
+     let result = {contents: []};
+     try (
+       while (true) {
+         result.contents = [
+           Re.Pcre.substitute(~rex=refmttypeNewlineR, ~subst=_ => "\n", input_line(input)),
+           ...result.contents,
+         ];
+       }
+     ) {
+     | End_of_file => ignore(Unix.close_process_in(input))
+     };
+     List.rev(result^);
+   }; */
 
 let toReasonTypes1 = (~refmttypePath, one) =>
   switch (toReasonTypes(~refmttypePath, [one])) {
