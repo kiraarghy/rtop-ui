@@ -44,7 +44,14 @@ let component = ReasonReact.reducerComponent("Terminal_Content");
 let make = _children => {
   ...component,
   initialState: () => {
-    inputValue: "",
+    inputValue: {|
+type say = | Hello | Goodbye;
+let say = 
+fun
+  | Hello => ()
+  | Goodbye => ()
+  | _ => ();
+    |},
     inputDisplay: "",
     history: [("", Reason)],
     historyCursor: (-1),
@@ -128,14 +135,15 @@ let make = _children => {
           switch (result) {
           | Ok(evaluate) => [|ResultOk(evaluate)|]
           | OkWithLog(evaluate, log) => [|ResultOk(evaluate ++ "\n" ++ log)|]
-          | OkWithError(evaluate, error) => [|
+          | OkWithError(evaluate, error) => 
+          [|
               ResultOk(evaluate),
               Refmterr_Index.parseFromRtop(
                 ~customErrorParsers=[],
                 ~content=inputValue,
                 ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
               )
-              |> Refmterr_HtmlReporter.generateReport(~content=[inputValue])
+              |> Refmterr_HtmlReporter.generateReport(~content=inputValue)
               |. ResultError,
             |]
           | Error(error) => [|
@@ -144,7 +152,7 @@ let make = _children => {
                 ~content=inputValue,
                 ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
               )
-              |> Refmterr_HtmlReporter.generateReport(~content=[inputValue])
+              |> Refmterr_HtmlReporter.generateReport(~content=inputValue)
               |. ResultError,
             |]
           };

@@ -240,23 +240,40 @@ let prettyPrintParsedResult =
       ReportError.report(~refmttypePath, withFileInfo.parsedContent),
       printFile(withFileInfo),
       indent(dim("# "), List.map(dim, originalRevLines)),
-      [highlight(~dim=true, ~bold=true, "# Unformatted Error Output:")],
+      [normal(~dim=true, ~bold=true, "# Unformatted Error Output:")],
     ])
   | Warning(withFileInfo) =>
     List.concat([
+      ["", ""],
       ReportWarning.report(
         ~refmttypePath,
         withFileInfo.parsedContent.code,
         withFileInfo.filePath,
         withFileInfo.parsedContent.warningType,
       ),
+      [""],
       printFile(~isWarningWithCode=withFileInfo.parsedContent.code, withFileInfo),
+      [""],
+      [""],
       indent(dim("# "), List.map(dim, originalRevLines)),
       [highlight(~dim=true, ~bold=true, "# Unformatted Warning Output:")],
     ])
   };
-
-let generateReport = (~content, parsedError) =>
-  prettyPrintParsedResult(~originalRevLines=content, ~refmttypePath=None, parsedError)
+let split_on_char = (sep, s) => {
+  open! String;
+  let r = ref([]);
+  let j = ref(length(s));
+  for (i in length(s) - 1 downto 0) {
+    if (unsafe_get(s, i) == sep) {
+      r := [sub(s, i + 1, j^ - i - 1), ...r^];
+      j := i;
+    };
+  };
+  [sub(s, 0, j^), ...r^];
+};
+let generateReport = (~content, parsedError) => {
+  let originalRevLines = split_on_char('\n', content) |. Belt.List.reverse;
+  prettyPrintParsedResult(~originalRevLines, ~refmttypePath=None, parsedError)
   |. Belt.List.reverse
   |> Refmterr_Stylish.HtmlStylish.concatList("");
+};

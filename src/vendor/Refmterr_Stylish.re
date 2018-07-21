@@ -173,7 +173,7 @@ module HtmlStylish = {
 
   /* TODO */
   let invert = s => {j|<span>$s</span>|j};
-  let dim = s => {j|<span class="gray">$s</span>|j};
+  let dim = s => {j|<span class="dim">$s</span>|j};
   let underline = s => {j|<span class="underline">$s</span>|j};
 
   let makeColor = (~underline=false, ~invert=false, ~dim=false, ~bold=false, ~className="", s) => {
@@ -182,7 +182,7 @@ module HtmlStylish = {
       className := ["underline", ...className^];
     };
     if (dim) {
-      className := [invert ? "bg-gray" : "gray", ...className^];
+      className := [invert ? "bg-gray" : "dim", ...className^];
     };
     if (bold) {
       className := ["b", ...className^];
@@ -248,8 +248,8 @@ module HtmlStylish = {
         ~first=0,
         ~last=99999,
         str,
-      ) =>
-    stringSlice(~last=first, str)
-    ++ color(~underline, ~dim, ~invert, ~bold, stringSlice(~first, ~last, str))
-    ++ stringSlice(~first=last, str);
+      ) => 
+  stringSlice(~last=first, str)
+     ++ color(~underline, ~dim, ~invert, ~bold, stringSlice(~first, ~last, str))
+     ++ stringSlice(~first=last, str);
 };
