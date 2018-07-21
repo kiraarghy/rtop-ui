@@ -128,7 +128,9 @@ let make = _children => {
           switch (result) {
           | Ok(evaluate) => ResultOk(evaluate)
           | OkWithLog(evaluate, log) => ResultOk(evaluate ++ "\n" ++ log)
-          | Error(error) => ResultError(error)
+          | Error(error) =>
+            Js.log(Reason_Evaluator.parseError(~content=inputValue, ~error));
+            ResultError(error);
           };
         ReasonReact.Update({
           ...state,

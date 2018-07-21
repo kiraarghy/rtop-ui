@@ -20,7 +20,7 @@
   "ppx-flags": ["./ppx_bs_css\\ --as-ppx"],
   "suffix": ".bs.js",
   "namespace": true,
-  "bs-dependencies": ["reason-react", "bs-css"],
+  "bs-dependencies": ["reason-react", "bs-css", "bs-json"],
   "refmt": 3,
   "warnings": {
     "error": "+5"
