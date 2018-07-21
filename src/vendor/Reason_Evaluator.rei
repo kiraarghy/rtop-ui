@@ -8,7 +8,9 @@ type executeResult =
      | Ok | Result => "valid"
      | _ => "not valid";
      */
-  | OkWithError(string, string);
+  | OkWithError(string, string)
+  /* #help; */
+  | Log(string);
 
 let execute: string => executeResult;
 

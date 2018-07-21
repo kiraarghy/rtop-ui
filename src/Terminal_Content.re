@@ -158,6 +158,7 @@ fun
                  )
               |. ResultError,
             |]
+          | Log(stdout) => [|ResultOk(stdout)|]
           };
         ReasonReact.Update({
           ...state,
