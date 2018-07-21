@@ -46,7 +46,7 @@ let make = _children => {
   initialState: () => {
     inputValue: {|
 type say = | Hello | Goodbye;
-let say = 
+let say =
 fun
   | Hello => ()
   | Goodbye => ()
@@ -135,15 +135,16 @@ fun
           switch (result) {
           | Ok(evaluate) => [|ResultOk(evaluate)|]
           | OkWithLog(evaluate, log) => [|ResultOk(evaluate ++ "\n" ++ log)|]
-          | OkWithError(evaluate, error) => 
-          [|
+          | OkWithError(evaluate, error) => [|
               ResultOk(evaluate),
               Refmterr_Index.parseFromRtop(
                 ~customErrorParsers=[],
                 ~content=inputValue,
                 ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
               )
-              |> Refmterr_HtmlReporter.generateReport(~content=inputValue)
+              |> Refmterr_HtmlReporter.generateReport(
+                   ~content=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
+                 )
               |. ResultError,
             |]
           | Error(error) => [|
@@ -152,7 +153,9 @@ fun
                 ~content=inputValue,
                 ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
               )
-              |> Refmterr_HtmlReporter.generateReport(~content=inputValue)
+              |> Refmterr_HtmlReporter.generateReport(
+                   ~content=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
+                 )
               |. ResultError,
             |]
           };
