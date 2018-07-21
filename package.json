@@ -13,8 +13,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@glennsl/bs-json": "^2.0.0",
     "bs-css": "^7.0.1",
     "bs-json": "^1.0.1",
+    "install": "^0.12.1",
+    "npm": "^6.2.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-textarea-autosize": "^7.0.3",
