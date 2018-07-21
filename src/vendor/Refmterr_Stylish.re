@@ -162,7 +162,11 @@ module ANSIStylish: StylishSig = {
 module HtmlStylish = {
   type t = string;
   let empty = "";
-  let concatList = String.concat;
+  let concatList = (connector, list) =>
+    list
+    |. Belt.List.reduce("", (line, acc) =>
+         line |> String.trim == "" ? acc : acc ++ connector ++ "<p>" ++ line ++ "</p>"
+       );
 
   let bold = s => {j|<span class="b">$s</span>|j};
 
@@ -183,7 +187,7 @@ module HtmlStylish = {
       className := ["b", ...className^];
     };
 
-    className^;
+    className^ |> String.concat(" ");
   };
 
   let normal = (~underline=false, ~invert=false, ~dim=false, ~bold=false, s) => {
@@ -212,7 +216,7 @@ module HtmlStylish = {
   };
 
   let cyan = (~underline=false, ~invert=false, ~dim=false, ~bold=false, s) => {
-    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className=["cyan"], s);
+    let className = makeColor(~underline, ~invert, ~dim, ~bold, ~className=["light-blue"], s);
     {j|<span class="$(className)">$s</span>|j};
   };
 

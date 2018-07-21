@@ -5,11 +5,22 @@ let expected =
   ErrorContent({
     filePath: "_none_",
     cachedContent: [content],
-    range: ((0, 8), (0, 9)),
-    parsedContent: Type_UnboundValue({unboundValue: "c", suggestions: None}),
+    range: ((0, 16), (0, 17)),
+    parsedContent:
+      Type_IncompatibleType({
+        term: Expression,
+        extra: "",
+        main: {
+          actual: ["int"],
+          expected: ["string"],
+        },
+        incompats: [],
+        escapedScope: None,
+      }),
   });
 
 report(~originalRevLines=[content], ~refmttypePath=None, expected)
-|> List.rev
-|> String.concat("\n")
+|. Belt.List.reduce("", (line, acc) =>
+     line |> String.trim == "" ? acc : acc ++ "\n<p>" ++ line ++ "</p>"
+   )
 |> Js.log;

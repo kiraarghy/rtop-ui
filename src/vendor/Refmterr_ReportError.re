@@ -23,7 +23,7 @@ let toReasonTypes = (~refmttypePath, types) => types;
    switch (refmttypePath) {
    | None => types
    | Some(path) =>
-     let types = String.concat("\\\"", List.map(normalizeType, types));
+     let types = concatList("\\\"", List.map(normalizeType, types));
      let cmd = path ++ (sp({| "%s"|}))(types);
      let input = Unix.open_process_in(cmd);
      let result = {contents: []};
@@ -88,7 +88,7 @@ let rec renderTypeEquality = (~lines=[], ~types, ~others, hl, diffHl) =>
     let indent = List.length(lines) > 0 ? "" : "";
     let lines = [indentStr(indent, highlightType(hd, "", hl, diffHl)), ...lines];
     renderTypeEquality(~lines, ~types=tl, ~others=[], hl, diffHl);
-  | ([], _) => String.concat(dim("\nEquals\n"), List.rev(lines))
+  | ([], _) => concatList(dim("\nEquals\n"), List.rev(lines))
   };
 
 let renderInequality = (~isDetail, ~actual, ~expected) => {
@@ -126,7 +126,7 @@ let renderInequality = (~isDetail, ~actual, ~expected) => {
         "",
       ];
     };
-  String.concat("\n", ret);
+  concatList("\n", ret);
 };
 
 let doubleUnder = Re.Pcre.regexp({|__|});
@@ -162,7 +162,7 @@ let normalizeIncompatibleType = incType => {
 let reportEscape = originalType => {
   let normalized = normalizeType(originalType);
   let _inferred = normalized != originalType;
-  String.concat(
+  concatList(
     "\n",
     [
       purple(~bold=true, "Learn:")
@@ -171,7 +171,7 @@ let reportEscape = originalType => {
            ~dim=true,
            " What does it mean for a type variable to \"escape\" its scope?",
          ),
-      String.concat(
+      concatList(
         "\n",
         [
           "Important assumptions about the type are potentially being violated because",
@@ -265,7 +265,7 @@ let report = (~refmttypePath, parsedContent) : list(string) => {
           reportEscape(t),
         ]
       };
-    let mainStr = String.concat("\n", main);
+    let mainStr = concatList("\n", main);
     let withoutExtra =
       switch (incompats) {
       | [] => [mainStr]
@@ -279,7 +279,7 @@ let report = (~refmttypePath, parsedContent) : list(string) => {
             },
             incompats,
           )
-          |> String.concat("\n\n");
+          |> concatList("\n\n");
         [
           incompatLines,
           "",
@@ -460,7 +460,7 @@ let report = (~refmttypePath, parsedContent) : list(string) => {
       switch (missing, values, types) {
       | ([], [], []) => "This module doesn't match its signature. See the original error output"
       | ([hd, ...tl], _, _) =>
-        String.concat(
+        concatList(
           "\n",
           [
             "",
@@ -483,7 +483,7 @@ let report = (~refmttypePath, parsedContent) : list(string) => {
       | Value => "value"
     );
     let missingMsg = ((what, named, declaredAtFile, declaredAtLine)) =>
-      String.concat(
+      concatList(
         "\n",
         [
           sp(
@@ -500,7 +500,7 @@ let report = (~refmttypePath, parsedContent) : list(string) => {
     let badValueMsg = info => {
       let (what, named, good, goodFile, goodLn, badName, bad, badFile, badLn) = info;
       let (bad, good) = toReasonTypes2(bad, good);
-      String.concat(
+      concatList(
         "\n",
         [
           sp(
@@ -528,7 +528,7 @@ let report = (~refmttypePath, parsedContent) : list(string) => {
     let badTypeMsg = info => {
       let (good, goodFile, goodLn, bad, badFile, badLn, arity) = info;
       let (bad, good) = toReasonTypes2(bad, good);
-      String.concat(
+      concatList(
         "\n",
         [
           arity ?

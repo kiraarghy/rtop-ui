@@ -237,14 +237,7 @@ let prettyPrintParsedResult =
     }
   | ErrorContent(withFileInfo) =>
     List.concat([
-      ["", ""],
       ReportError.report(~refmttypePath, withFileInfo.parsedContent),
-      [""],
-      printFile(withFileInfo),
-      [""],
-      [""],
-      indent(dim("# "), List.map(dim, originalRevLines)),
-      [highlight(~dim=true, ~bold=true, "# Unformatted Error Output:")],
     ])
   | Warning(withFileInfo) =>
     List.concat([
