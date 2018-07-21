@@ -31,8 +31,7 @@ let execute = code => {
 [@bs.val] external reasonSyntax : unit => unit = "evaluator.reasonSyntax";
 [@bs.val] external mlSyntax : unit => unit = "evaluator.mlSyntax";
 
-[@bs.val]
-external js_parseError : (~content: string, ~error: string) => Js.Json.t = "refmterr.parse";
+[@bs.val] external js_parseError : (~content: string, ~error: string) => string = "refmterr.parse";
 
 let parseError = (~content, ~error) =>
   js_parseError(~content, ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}));
