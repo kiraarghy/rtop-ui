@@ -57,7 +57,12 @@ type incompatibleType = {
 };
 
 external mismatchTypeArguments_of_json : Js.Json.t => mismatchTypeArguments = "%identity";
-external unboundValue_of_json : Js.Json.t => unboundValue = "%identity";
+
+let unboundValue_of_json = json =>
+  Json.Decode.{
+    suggestions: json |> optional(field("suggestions", list(string))),
+    unboundValue: json |> field("unboundValue", string),
+  };
 
 let error_of_json = json => {
   open Json.Decode;

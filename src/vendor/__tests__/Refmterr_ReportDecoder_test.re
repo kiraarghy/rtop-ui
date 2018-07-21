@@ -19,29 +19,39 @@ let matcher = (~content, ~expected, ~print=false, ()) => {
   };
 };
 
-describe("Error", () =>
-  Expect.(
-    test("Type_IncompatibleType", () => {
-      let content = "let a: string = 0;";
-      let expected =
-        ErrorContent({
-          filePath: "_none_",
-          cachedContent: ["let a: string = 0;"],
-          range: ((0, 16), (0, 17)),
-          parsedContent:
-            Type_IncompatibleType({
-              term: Expression,
-              extra: "",
-              main: {
-                actual: ["int"],
-                expected: ["string"],
-              },
-              incompats: [],
-              escapedScope: None,
-            }),
-        });
+describe("Error", () => {
+  test("Type_IncompatibleType", () => {
+    let content = "let a: string = 0;";
+    let expected =
+      ErrorContent({
+        filePath: "_none_",
+        cachedContent: [content],
+        range: ((0, 16), (0, 17)),
+        parsedContent:
+          Type_IncompatibleType({
+            term: Expression,
+            extra: "",
+            main: {
+              actual: ["int"],
+              expected: ["string"],
+            },
+            incompats: [],
+            escapedScope: None,
+          }),
+      });
 
-      matcher(~content, ~expected, ());
-    })
-  )
-);
+    matcher(~content, ~expected, ());
+  });
+  test("Type_UnboundValue", () => {
+    let content = "let a = c;";
+    let expected =
+      ErrorContent({
+        filePath: "_none_",
+        cachedContent: [content],
+        range: ((0, 8), (0, 9)),
+        parsedContent: Type_UnboundValue({unboundValue: "c", suggestions: None}),
+      });
+
+    matcher(~content, ~expected, ~print=false, ());
+  });
+});
