@@ -37,7 +37,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "/node_modules/(?!@glennsl|bs-platform)",
+      "/node_modules/(?!@glennsl|@thangngoc89|bs-platform)",
       "/public/"
     ]
   }
