@@ -164,6 +164,7 @@ module HtmlStylish = {
   let empty = "";
   let concatList = (connector, list) =>
     list
+    |. Belt.List.reverse
     |. Belt.List.reduce("", (line, acc) =>
          line |> String.trim == "" ? acc : acc ++ connector ++ "<p>" ++ line ++ "</p>"
        );

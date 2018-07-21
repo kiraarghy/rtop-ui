@@ -257,7 +257,4 @@ let prettyPrintParsedResult =
 
 let generateReport = (~content, parsedError) =>
   prettyPrintParsedResult(~originalRevLines=content, ~refmttypePath=None, parsedError)
-  |. List.rev
-  |. Belt.List.reduce("", (line, acc) =>
-       line |> String.trim == "" ? acc : acc ++ "\n<p>" ++ line ++ "</p>"
-     );
+  |> Refmterr_Stylish.HtmlStylish.concatList("");
