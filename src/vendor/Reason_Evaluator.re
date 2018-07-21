@@ -10,7 +10,8 @@ type js_executeResult = {
 type executeResult =
   | Error(string)
   | Ok(string)
-  | OkWithLog(string, string);
+  | OkWithLog(string, string)
+  | OkWithError(string, string);
 
 let execute = code => {
   let result = js_execute(code);
@@ -18,9 +19,11 @@ let execute = code => {
   let stdout = result |. stdoutGet |. Js.String.trim;
   let evaluate = result |. evaluateGet |. Js.String.trim;
   switch (stderr == "", stdout == "", evaluate == "") {
+  /* no error, no output, no evaluate */
   | (false, true, true) => Error(stderr)
   | (true, true, false) => Ok(evaluate)
   | (true, false, false) => OkWithLog(evaluate, stdout)
+  | (false, true, false) => OkWithError(evaluate, stderr)
   | _ =>
     Js.log(result);
     Invalid_argument("What the heck is going on with this code? " ++ code) |. raise;

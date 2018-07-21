@@ -126,16 +126,27 @@ let make = _children => {
         let result = Reason_Evaluator.execute(inputValue);
         let result =
           switch (result) {
-          | Ok(evaluate) => ResultOk(evaluate)
-          | OkWithLog(evaluate, log) => ResultOk(evaluate ++ "\n" ++ log)
-          | Error(error) =>
-            Refmterr_Index.parseFromRtop(
-              ~customErrorParsers=[],
-              ~content=inputValue,
-              ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
-            )
-            |> Refmterr_HtmlReporter.generateReport(~content=[inputValue])
-            |. ResultError
+          | Ok(evaluate) => [|ResultOk(evaluate)|]
+          | OkWithLog(evaluate, log) => [|ResultOk(evaluate ++ "\n" ++ log)|]
+          | OkWithError(evaluate, error) => [|
+              ResultOk(evaluate),
+              Refmterr_Index.parseFromRtop(
+                ~customErrorParsers=[],
+                ~content=inputValue,
+                ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
+              )
+              |> Refmterr_HtmlReporter.generateReport(~content=[inputValue])
+              |. ResultError,
+            |]
+          | Error(error) => [|
+              Refmterr_Index.parseFromRtop(
+                ~customErrorParsers=[],
+                ~content=inputValue,
+                ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
+              )
+              |> Refmterr_HtmlReporter.generateReport(~content=[inputValue])
+              |. ResultError,
+            |]
           };
         ReasonReact.Update({
           ...state,
@@ -143,10 +154,11 @@ let make = _children => {
           inputDisplay: "",
           history: [(inputValue, state.currentSyntax), ...state.history],
           displayStack:
-            Belt.Array.concat(
-              [|result, Input((inputValue, state.currentSyntax))|],
+            Belt.Array.concatMany([|
+              result,
+              [|Input((inputValue, state.currentSyntax))|],
               state.displayStack,
-            ),
+            |]),
         });
       };
     },

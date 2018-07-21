@@ -1,7 +1,14 @@
 type executeResult =
   | Error(string)
   | Ok(string)
-  | OkWithLog(string, string);
+  | OkWithLog(string, string)
+  /* type a = | Ok | Result;
+     let print =
+     fun
+     | Ok | Result => "valid"
+     | _ => "not valid";
+     */
+  | OkWithError(string, string);
 
 let execute: string => executeResult;
 
