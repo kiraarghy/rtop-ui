@@ -12,7 +12,8 @@ type executeResult =
   | Ok(string)
   | OkWithLog(string, string)
   | OkWithError(string, string)
-  | Log(string);
+  | Log(string)
+  | Nothing;
 
 let execute = code => {
   let result = js_execute(code);
@@ -26,6 +27,7 @@ let execute = code => {
   | (true, false, false) => OkWithLog(evaluate, stdout)
   | (false, true, false) => OkWithError(evaluate, stderr)
   | (true, false, true) => Log(stdout)
+  | (true, true, true) => Nothing
   | _ =>
     Js.log(result);
     Invalid_argument("What the heck is going on with this code? " ++ code) |. raise;

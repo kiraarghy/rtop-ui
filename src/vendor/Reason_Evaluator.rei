@@ -10,7 +10,9 @@ type executeResult =
      */
   | OkWithError(string, string)
   /* #help; */
-  | Log(string);
+  | Log(string)
+  /* #print_length 10 */
+  | Nothing;
 
 let execute: string => executeResult;
 
