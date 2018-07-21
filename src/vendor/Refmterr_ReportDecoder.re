@@ -7,7 +7,8 @@ let variant = (f, json) =>
       let source: array(Js.Json.t) = Obj.magic(json: Js.Json.t);
       let length = Js.Array.length(source) - 1;
       let variantName = Array.unsafe_get(source, 0) |> string;
-      f(~variantName, ~length, ~source);
+      let raiseUnknownTag = () => raise(DecodeError("Unknown tag " ++ variantName));
+      f(~variantName, ~length, ~source, ~raiseUnknownTag);
     } else {
       raise(DecodeError("Expected array, got " ++ _stringify(json)));
     }
@@ -15,13 +16,52 @@ let variant = (f, json) =>
 
 open BetterErrorsTypes;
 
+let term_of_json = json => {
+  let f = (~variantName, ~length, ~source as _, ~raiseUnknownTag) =>
+    switch (variantName, length) {
+    | ("Pattern", 0) => Pattern
+    | ("Expression", 0) => Expression
+    | _ => raiseUnknownTag()
+    };
+  json |> variant(f);
+};
+
+let incompat_of_json = json =>
+  Json.Decode.{
+    /* List of type equivalencies */
+    actual: json |> field("actual", list(string)),
+    /* List of type equivalencies */
+    expected: json |> field("expected", list(string)),
+  };
+
+let incompatibleType_of_json = json =>
+  Json.Decode.{
+    term: json |> field("term", term_of_json),
+    extra: json |> field("extra", string),
+    main: json |> field("main", incompat_of_json),
+    incompats: json |> field("incompats", list(incompat_of_json)),
+    escapedScope: json |> optional(field("escapedScope", string)),
+  };
+[@deriving yojson]
+type incompatibleType = {
+  term,
+  extra: string,
+  /*
+   * When the compiler points out incompatible parts. It's not clear if A or B
+   * belongs to expected vs. observed. Extracted from extra.
+   */
+  main: incompat,
+  incompats: list(incompat),
+  /* Type constructor name that might escape scope. */
+  escapedScope: option(string),
+};
+
 external mismatchTypeArguments_of_json : Js.Json.t => mismatchTypeArguments = "%identity";
 external unboundValue_of_json : Js.Json.t => unboundValue = "%identity";
-external incompatibleType_of_json : Js.Json.t => incompatibleType = "%identity";
 
 let error_of_json = json => {
   open Json.Decode;
-  let f = (~variantName, ~length, ~source) =>
+  let f = (~variantName, ~length, ~source, ~raiseUnknownTag) =>
     switch (length) {
     | 0 when variantName == "NoErrorExtracted" => NoErrorExtracted
     | 1 =>
@@ -49,7 +89,7 @@ let error_of_json = json => {
          | File_SyntaxError(syntaxError)
          | Build_InconsistentAssumptions(inconsistentAssumptions)
          | File_IllegalCharacter(illegalCharacter) */
-      | _ => raise(DecodeError("Unknown tag " ++ variantName))
+      | _ => raiseUnknownTag()
       };
     | length => raise(DecodeError("Unexpected tag with length of " ++ string_of_int(length)))
     };
@@ -71,16 +111,13 @@ let withFileInfo_of_json = json =>
   };
 
 let result_of_json = json =>
-  Json.Decode.(
-    json
-    |> variant((~variantName, ~length, ~source) =>
-         switch (variantName, length) {
-         | ("Unparsable", 0) => Unparsable
-         | ("ErrorContent", 1) =>
-           ErrorContent(withFileInfo_of_json(Array.unsafe_get(source, 1)))
-         | _ => raise(DecodeError("Unhandle tag " ++ variantName))
-         }
-       )
-  );
+  json
+  |> variant((~variantName, ~length, ~source, ~raiseUnknownTag) =>
+       switch (variantName, length) {
+       | ("Unparsable", 0) => Unparsable
+       | ("ErrorContent", 1) => ErrorContent(withFileInfo_of_json(Array.unsafe_get(source, 1)))
+       | _ => raiseUnknownTag()
+       }
+     );
 
 let parse = str => str |> Json.parseOrRaise |> result_of_json;
