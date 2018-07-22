@@ -248,8 +248,8 @@ module HtmlStylish = {
         ~first=0,
         ~last=99999,
         str,
-      ) => 
-  stringSlice(~last=first, str)
-     ++ color(~underline, ~dim, ~invert, ~bold, stringSlice(~first, ~last, str))
-     ++ stringSlice(~first=last, str);
+      ) =>
+    stringSlice(~last=first, str)
+    ++ color(~underline, ~dim, ~invert, ~bold, stringSlice(~first, ~last, str))
+    ++ stringSlice(~first=last, str);
 };
