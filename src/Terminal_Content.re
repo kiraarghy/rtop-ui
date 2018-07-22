@@ -137,26 +137,10 @@ fun
           | OkWithLog(evaluate, log) => [|ResultOk(evaluate ++ "\n" ++ log)|]
           | OkWithError(evaluate, error) => [|
               ResultOk(evaluate),
-              Refmterr_Index.parseFromRtop(
-                ~customErrorParsers=[],
-                ~content=inputValue,
-                ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
-              )
-              |> Refmterr_HtmlReporter.generateReport(
-                   ~content=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
-                 )
-              |. ResultError,
+              Reason_Evaluator.parseError(~content=inputValue, ~error) |. ResultError,
             |]
           | Error(error) => [|
-              Refmterr_Index.parseFromRtop(
-                ~customErrorParsers=[],
-                ~content=inputValue,
-                ~error=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
-              )
-              |> Refmterr_HtmlReporter.generateReport(
-                   ~content=error |> Js.String.replace({|File ""|}, {|File "_none_"|}),
-                 )
-              |. ResultError,
+              Reason_Evaluator.parseError(~content=inputValue, ~error) |. ResultError,
             |]
           | Log(stdout) => [|ResultOk(stdout)|]
           | Nothing => [||]
