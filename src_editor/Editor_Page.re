@@ -156,7 +156,10 @@ let make = _children => {
                                          CodeBlock.lineWidget(
                                            ~typ=Lw_Error,
                                            ~line,
-                                           ~content,
+                                           ~content=
+                                             content
+                                             ++ " Block: "
+                                             ++ pos_of_string(pos),
                                          )
                                        );
 

@@ -29,7 +29,7 @@ const createErrorWidget = html => {
     wrapper,
     options: {
       coverGutter: true,
-      noHScroll: true,
+      noHScroll: false,
       above: false,
       showIfHidden: false,
     },

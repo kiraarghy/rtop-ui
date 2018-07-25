@@ -1,4 +1,6 @@
-let code1 = {|let pi = 4. *. atan(1.);
+let code1 = {|print_endline("Hello ReasonML folks!");
+
+let pi = 4. *. atan(1.);
 
 let random_gaussian = () =>
   1.
