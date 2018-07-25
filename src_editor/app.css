@@ -48,11 +48,22 @@ body {
 
 .widget__value {
   color: #868e96;
+  height: 2em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 80%;
+  opacity: 0.6;
+  transition: opacity 50ms ease-in-out;
+}
+.widget__value:hover {
+  opacity: 1;
 }
 
 .widget__stdout {
   color: #495057;
   background-color: #e9ecef;
   white-space: pre;
+  padding: 0.5em;
 }
 /* \\\\\\\\\\\\\\\\\\\\\ Wdigets \\\\\\\\\\\\\ */
