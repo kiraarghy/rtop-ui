@@ -13,16 +13,16 @@ import "./app.css";
 
 const createErrorWidget = html => {
   const wrapper = document.createElement("div");
-  wrapper.className = "syntax-error__wrapper syntax-error__wrapper-lg";
+  wrapper.className = "widget__error widget__error-lg";
 
   const icon1 = wrapper.appendChild(document.createElement("div"));
-  icon1.className = "syntax-error__icon syntax-error__icon-1";
+  icon1.className = "widget__error-icon widget__error-icon-1";
 
   const icon2 = wrapper.appendChild(document.createElement("div"));
-  icon2.className = "syntax-error__icon syntax-error__icon-2";
+  icon2.className = "widget__error-icon widget__error-icon-2";
 
   const content = wrapper.appendChild(document.createElement("span"));
-  content.className = "syntax-error__content";
+  content.className = "widget__error-content";
   content.innerHTML = html;
 
   return {
