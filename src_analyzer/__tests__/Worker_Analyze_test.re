@@ -110,7 +110,7 @@ describe(
       expect(exe("let a = 1;")) |> toMatchSnapshot
     );
 
-    Only.test("multiple directive in same line", () =>
+    test("multiple directive in same line", () =>
       expect(exe("let a = 1; let b = a + a;")) |> toMatchSnapshot
     );
 

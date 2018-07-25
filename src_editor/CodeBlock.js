@@ -57,7 +57,7 @@ export default class CodeBlock extends PureComponent {
         onChange={this.props.onChange}
         firstLineNumber={this.props.firstLineNumber}
         options={{
-          mode: "mllike",
+          mode: "rust",
           theme: "runkit-light",
           lineNumbers: true,
           viewportMargin: Infinity,
