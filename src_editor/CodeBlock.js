@@ -121,7 +121,7 @@ class CodeMirror extends Component {
 
         editor.addLineWidget(w.line, wrapper.wrapper, wrapper.options);
 
-        acc.push(wrapper);
+        acc.push(wrapper.wrapper);
         return acc;
       }, []);
     }
