@@ -1,14 +1,13 @@
-let code1 = {|let pi = 4. *. (atan 1.)
-let random_gaussian () =
-  1. +.
-    ((sqrt ((-2.) *. (log (Random.float 1.)))) *.
-       (cos ((2. *. pi) *. (Random.float 1.))))
+let code1 = {|let pi = 4. *. atan(1.);
 
-let _ = for i = 0 to 40 do
-  (random_gaussian ())
-  |> string_of_float
-  |> print_endline
-done|};
+let random_gaussian = () =>
+  1.
+  +. sqrt((-2.) *. log(Random.float(1.)))
+  *. cos(2. *. pi *. Random.float(1.));
+
+for (i in 0 to 40) {
+  random_gaussian() |> string_of_float |> print_endline;
+};|};
 
 let code2 = {|type tree = Leaf | Node(int, tree, tree);
 

@@ -1,28 +1,20 @@
-let code = "let a = 1 + 1;";
-
-Js.Promise.(
-  Editor_Worker.execute(. code)
-  |> then_(result => resolve(Js.log(result)))
-  |> catch(error => resolve(Js.log(error)))
-  |> ignore
-);
-
 module CodeBlock = {
   [@bs.module "./CodeBlock.js"]
   external reactClass : ReasonReact.reactClass = "default";
 
   [@bs.deriving abstract]
   type jsProps = {
-    value: string,
-    onChange: string => unit,
     [@bs.optional]
     firstLineNumber: int,
+    value: string,
+    onChange: string => unit,
+    onExecute: unit => unit,
   };
 
-  let make = (~value, ~onChange, ~firstLineNumber=?, children) =>
+  let make = (~value, ~onChange, ~firstLineNumber=?, ~onExecute, children) =>
     ReasonReact.wrapJsForReason(
       ~reactClass,
-      ~props=jsProps(~value, ~onChange, ~firstLineNumber?, ()),
+      ~props=jsProps(~value, ~onChange, ~onExecute, ~firstLineNumber?, ()),
       children,
     );
 };
@@ -40,7 +32,8 @@ type block =
 type state = {blocks: array(block)};
 
 type action =
-  | UpdateBlockValue(int, string);
+  | UpdateBlockValue(int, string)
+  | ExecuteBlock(int);
 
 let component = ReasonReact.reducerComponent("Editor_Page");
 
@@ -62,6 +55,27 @@ let make = _children => {
   },
   reducer: (action, state) =>
     switch (action) {
+    | ExecuteBlock(blockIndex) =>
+      switch (state.blocks |. Belt.Array.get(blockIndex)) {
+      | None => ReasonReact.NoUpdate
+      | Some(b) =>
+        switch (b) {
+        | B_Text(_) => ReasonReact.NoUpdate
+        | B_Code({bc_value}) =>
+          ReasonReact.SideEffects(
+            (
+              self =>
+                Js.Promise.(
+                  Editor_Worker.execute(. bc_value)
+                  |> then_(result => resolve(Js.log(result)))
+                  |> catch(error => resolve(Js.log(error)))
+                  |> ignore
+                )
+            ),
+          )
+        }
+      }
+
     | UpdateBlockValue(blockIndex, newValue) =>
       ReasonReact.Update({
         /* ...state, */
@@ -114,6 +128,7 @@ let make = _children => {
                      onChange=(
                        newValue => send(UpdateBlockValue(index, newValue))
                      )
+                     onExecute=(() => send(ExecuteBlock(index)))
                      firstLineNumber=bc_firstLineNumber
                    />
                  </div>

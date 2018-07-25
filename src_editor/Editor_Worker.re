@@ -24,8 +24,6 @@ type rtop = {
 };
 let worker = RtopWorker.make();
 
-Js.log(worker);
-
 let rtop: rtop = Comlink.comlink |. Comlink.proxy(worker);
 
 let execute = rtop |. executeGet;

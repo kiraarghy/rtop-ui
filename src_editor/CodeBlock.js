@@ -11,6 +11,31 @@ import "./cm-theme.css";
 import "./source-editor.css";
 import "./app.css";
 
+const createErrorWidget = html => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "syntax-error__wrapper syntax-error__wrapper-lg";
+
+  const icon1 = wrapper.appendChild(document.createElement("div"));
+  icon1.className = "syntax-error__icon syntax-error__icon-1";
+
+  const icon2 = wrapper.appendChild(document.createElement("div"));
+  icon2.className = "syntax-error__icon syntax-error__icon-2";
+
+  const content = wrapper.appendChild(document.createElement("span"));
+  content.className = "syntax-error__content";
+  content.innerHTML = html;
+
+  return wrapper;
+};
+
+const createSignatureWidget = text => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "";
+  wrapper.appendChild(document.createTextNode(text));
+
+  return wrapper;
+};
+
 class CodeMirror extends Component {
   constructor(props) {
     super(props);
@@ -68,33 +93,23 @@ export default class CodeBlock extends PureComponent {
               var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
               cm.replaceSelection(spaces);
             },
-            "Shift-Enter": function(cm) {
-              const wrapper = document.createElement("div");
-              wrapper.className =
-                "syntax-error__wrapper syntax-error__wrapper-lg";
+            "Shift-Enter": cm => {
+              this.props.onExecute();
+              // let doc = cm.getDoc();
+              // let getRange = doc.getRange(
+              //   { line: 15, ch: 1 },
+              //   { line: 16, ch: 34 }
+              // );
 
-              const icon1 = wrapper.appendChild(document.createElement("div"));
-              icon1.className = "syntax-error__icon syntax-error__icon-1";
-
-              const icon2 = wrapper.appendChild(document.createElement("div"));
-              icon2.className = "syntax-error__icon syntax-error__icon-2";
-
-              const content = wrapper.appendChild(
-                document.createElement("span")
-              );
-              content.className = "syntax-error__content";
-              let doc = cm.getDoc();
-              let getRange = doc.getRange(
-                { line: 15, ch: 1 },
-                { line: 16, ch: 34 }
-              );
-              console.log(getRange);
-              content.innerHTML = getRange;
-
-              cm.addLineWidget(0, wrapper, {
-                coverGutter: true,
-                noHScroll: true,
-              });
+              // const widget = createSignatureWidget(
+              //   "let pi: float = 3.14159265358979312;"
+              // );
+              // {
+              //   coverGutter: true,
+              //   noHScroll: true,
+              // }
+              // console.log(cm.lineInfo(1));
+              // cm.addWidget({ line: 0, ch: 1 }, widget);
             },
           },
         }}
@@ -102,3 +117,7 @@ export default class CodeBlock extends PureComponent {
     );
   }
 }
+
+CodeBlock.defaultProps = {
+  value: "",
+};

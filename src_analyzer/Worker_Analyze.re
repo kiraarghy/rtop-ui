@@ -1,4 +1,4 @@
-open Utils;
+/* open Utils; */
 
 module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
   module Evaluator = Worker_Evaluator.Make(ESig);
