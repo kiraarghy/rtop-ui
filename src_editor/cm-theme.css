@@ -4,7 +4,7 @@
 .source-editor .prerender,
 .source-viewer .prerender {
   font-size: 18px;
-  font-family: "Ubuntu Mono", monospace;
+  font-family: "Fira Code", "Ubuntu Mono", monospace;
   font-weight: 400;
   line-height: 1.4375;
   background: 0 0;
@@ -85,7 +85,7 @@
   border-width: 1px 1px 1px 0;
 }
 .cm-s-runkit-light.CodeMirror {
-  font-family: "Ubuntu Mono", monospace;
+  font-family: "Fira Code", "Ubuntu Mono", monospace;
   font-weight: 400;
 }
 .cm-s-runkit-light.CodeMirror span.CodeMirror-matchingbracket,
