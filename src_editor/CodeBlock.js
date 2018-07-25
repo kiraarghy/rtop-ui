@@ -36,9 +36,18 @@ const createSignatureWidget = text => {
   return wrapper;
 };
 
+const createValueWidget = text => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "widget__value";
+  wrapper.appendChild(document.createTextNode(text));
+
+  return wrapper;
+};
+
 class CodeMirror extends Component {
   constructor(props) {
     super(props);
+    this.widgets = [];
   }
 
   componentDidMount() {
@@ -65,6 +74,38 @@ class CodeMirror extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    let widgets = this.props.widgets;
+    if (prevProps.widgets !== widgets) {
+      this.widgets.forEach(domNode => {
+        domNode.remove();
+      });
+
+      let editor = this.editor;
+      this.widgets = widgets.reduce((acc, w) => {
+        let type = w.type;
+        let wrapper = null;
+        if (type === 1 /* Lw_Value */) {
+          wrapper = createValueWidget(w.content);
+        } else if (type === 0 /* Lw_Error */) {
+          wrapper = createErrorWidget(w.content);
+        } else {
+          return acc;
+        }
+
+        editor.addLineWidget(w.line, wrapper, {
+          coverGutter: false,
+          noHScroll: true,
+          above: false,
+          showIfHidden: false,
+        });
+
+        acc.push(wrapper);
+        return acc;
+      }, []);
+    }
+  }
+
   render() {
     return (
       <div className={this.props.className} ref={div => (this.div = div)} />
@@ -81,6 +122,7 @@ export default class CodeBlock extends PureComponent {
         value={this.props.value}
         onChange={this.props.onChange}
         firstLineNumber={this.props.firstLineNumber}
+        widgets={this.props.widgets}
         options={{
           mode: "rust",
           theme: "runkit-light",

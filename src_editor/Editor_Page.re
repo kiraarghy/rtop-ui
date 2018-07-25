@@ -1,20 +1,52 @@
+open Worker_Types;
+
 module CodeBlock = {
   [@bs.module "./CodeBlock.js"]
   external reactClass : ReasonReact.reactClass = "default";
+
+  type lineWidgetType =
+    | [@bs.as 0] Lw_Error
+    | [@bs.as 1] Lw_Value;
+
+  [@bs.deriving abstract]
+  type lineWidget = {
+    [@bs.as "type"]
+    typ: lineWidgetType,
+    content: string,
+    line: int,
+  };
 
   [@bs.deriving abstract]
   type jsProps = {
     [@bs.optional]
     firstLineNumber: int,
+    [@bs.optional]
+    widgets: array(lineWidget),
     value: string,
     onChange: string => unit,
     onExecute: unit => unit,
   };
 
-  let make = (~value, ~onChange, ~firstLineNumber=?, ~onExecute, children) =>
+  let make =
+      (
+        ~value,
+        ~onChange,
+        ~onExecute,
+        ~firstLineNumber=?,
+        ~widgets=?,
+        children,
+      ) =>
     ReasonReact.wrapJsForReason(
       ~reactClass,
-      ~props=jsProps(~value, ~onChange, ~onExecute, ~firstLineNumber?, ()),
+      ~props=
+        jsProps(
+          ~value,
+          ~onChange,
+          ~onExecute,
+          ~firstLineNumber?,
+          ~widgets?,
+          (),
+        ),
       children,
     );
 };
@@ -23,6 +55,7 @@ type bcode = {
   bc_value: string,
   bc_firstLineNumber: int,
   bc_lines: int,
+  bc_widgets: array(CodeBlock.lineWidget),
 };
 
 type block =
@@ -33,7 +66,8 @@ type state = {blocks: array(block)};
 
 type action =
   | UpdateBlockValue(int, string)
-  | ExecuteBlock(int);
+  | ExecuteBlock(int)
+  | Block_AddWidgets(int, array(CodeBlock.lineWidget));
 
 let component = ReasonReact.reducerComponent("Editor_Page");
 
@@ -44,17 +78,35 @@ let make = _children => {
       B_Code({
         bc_value: Editor_Loremipsum.code1,
         bc_firstLineNumber: 1,
-        bc_lines: 11,
+        bc_lines: 10,
+        bc_widgets: [||],
       }),
       B_Code({
         bc_value: Editor_Loremipsum.code2,
-        bc_firstLineNumber: 12,
+        bc_firstLineNumber: 11,
         bc_lines: 19,
+        bc_widgets: [||],
       }),
     |],
   },
   reducer: (action, state) =>
     switch (action) {
+    | Block_AddWidgets(blockIndex, widgets) =>
+      ReasonReact.Update({
+        ...state,
+        blocks:
+          state.blocks
+          |. Belt.Array.mapWithIndexU((. i, block) =>
+               if (i != blockIndex) {
+                 block;
+               } else {
+                 switch (block) {
+                 | B_Text(_) => block
+                 | B_Code(bcode) => B_Code({...bcode, bc_widgets: widgets})
+                 };
+               }
+             ),
+      })
     | ExecuteBlock(blockIndex) =>
       switch (state.blocks |. Belt.Array.get(blockIndex)) {
       | None => ReasonReact.NoUpdate
@@ -67,7 +119,36 @@ let make = _children => {
               self =>
                 Js.Promise.(
                   Editor_Worker.execute(. bc_value)
-                  |> then_(result => resolve(Js.log(result)))
+                  |> then_(
+                       result => {
+                         let widgets =
+                           result
+                           |. Belt.List.reduceU(
+                                [||],
+                                (. acc, exeResult) => {
+                                  let {buffer: _, executeResult, pos} = exeResult;
+                                  let (_, {line}) = pos;
+                                  switch (executeResult.evaluate) {
+                                  | None => acc
+                                  | Some(content) =>
+                                    let w =
+                                      CodeBlock.lineWidget(
+                                        ~typ=Lw_Value,
+                                        ~line,
+                                        ~content,
+                                      );
+
+                                    Belt.Array.concat(acc, [|w|]);
+                                  };
+                                },
+                              );
+                         resolve(
+                           self.send(
+                             Block_AddWidgets(blockIndex, widgets),
+                           ),
+                         );
+                       },
+                     )
                   |> catch(error => resolve(Js.log(error)))
                   |> ignore
                 )
@@ -120,7 +201,7 @@ let make = _children => {
         state.blocks
         |. Belt.Array.mapWithIndexU((. index, block) =>
              switch (block) {
-             | B_Code({bc_value, bc_firstLineNumber}) =>
+             | B_Code({bc_value, bc_widgets, bc_firstLineNumber}) =>
                <div key=(index |> string_of_int) className="cell__container">
                  <div className="source-editor">
                    <CodeBlock
@@ -129,6 +210,7 @@ let make = _children => {
                        newValue => send(UpdateBlockValue(index, newValue))
                      )
                      onExecute=(() => send(ExecuteBlock(index)))
+                     widgets=bc_widgets
                      firstLineNumber=bc_firstLineNumber
                    />
                  </div>

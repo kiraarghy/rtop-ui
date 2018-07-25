@@ -15,3 +15,40 @@ body {
   padding: 0px;
   position: relative;
 }
+
+/* ///////////////////// Widgets ////////////// */
+
+.widget__error {
+  background-color: #fdeeee;
+  color: #eb5656;
+  overflow: hidden;
+}
+.widget__error-lg {
+  position: relative;
+  left: 28px;
+  width: calc(100% - 30px);
+  height: 2em;
+  display: flex;
+  align-items: center;
+  margin-left: -8px;
+}
+.widget__error-icon {
+  display: inline-block;
+  background-color: #eb5656;
+  margin-right: 1px;
+  height: 100%;
+}
+.widget__error-icon-1 {
+  width: 6px;
+}
+.widget__error-icon {
+  width: 2px;
+}
+.widget__error-content {
+  padding-left: 6px;
+}
+
+.widget__value {
+  color: #868e96;
+}
+/* \\\\\\\\\\\\\\\\\\\\\ Wdigets \\\\\\\\\\\\\ */
