@@ -150,8 +150,18 @@ let make = _children => {
                                          )
                                        );
 
+                                  let stderr =
+                                    executeResult.stderr
+                                    |. Belt.Option.map(content =>
+                                         CodeBlock.lineWidget(
+                                           ~typ=Lw_Error,
+                                           ~line,
+                                           ~content,
+                                         )
+                                       );
+
                                   let finalWidgets =
-                                    [stdout, evaluate]
+                                    [stdout, evaluate, stderr]
                                     |. Belt.List.reduceU(
                                          [], (. acc2, lineWidget) =>
                                          switch (lineWidget) {
