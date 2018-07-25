@@ -102,7 +102,9 @@ class CodeMirror extends Component {
     let widgets = this.props.widgets;
     if (prevProps.widgets !== widgets) {
       this.widgets.forEach(domNode => {
-        domNode.remove();
+        // TODO: should I remove the domNode ?
+        // Potential memory leaks?
+        domNode.clear();
       });
 
       let editor = this.editor;
@@ -119,9 +121,12 @@ class CodeMirror extends Component {
           return acc;
         }
 
-        editor.addLineWidget(w.line, wrapper.wrapper, wrapper.options);
-
-        acc.push(wrapper.wrapper);
+        let lineWidget = editor.addLineWidget(
+          w.line,
+          wrapper.wrapper,
+          wrapper.options
+        );
+        acc.push(lineWidget);
         return acc;
       }, []);
     }
