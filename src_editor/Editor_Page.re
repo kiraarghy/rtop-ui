@@ -158,7 +158,7 @@ let make = _children => {
                                            ~line,
                                            ~content=
                                              content
-                                             ++ " Block: "
+                                             ++ "\nDebug information: "
                                              ++ pos_of_string(pos),
                                          )
                                        );

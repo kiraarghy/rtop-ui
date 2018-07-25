@@ -9,7 +9,7 @@ type loc = {
   col: int,
   offset: int,
 };
-let loc_of_string = ({line, col}) => {j|($(line), $(col)) |j};
+let loc_of_string = ({line, col}) => {j|($(line),$(col))|j};
 let pos_of_string = ((from, to_)) =>
   loc_of_string(from) ++ " - " ++ loc_of_string(to_);
 

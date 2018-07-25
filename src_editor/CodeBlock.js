@@ -15,12 +15,6 @@ const createErrorWidget = html => {
   const wrapper = document.createElement("div");
   wrapper.className = "widget__error widget__error-lg";
 
-  const icon1 = wrapper.appendChild(document.createElement("div"));
-  icon1.className = "widget__error-icon widget__error-icon-1";
-
-  const icon2 = wrapper.appendChild(document.createElement("div"));
-  icon2.className = "widget__error-icon widget__error-icon-2";
-
   const content = wrapper.appendChild(document.createElement("span"));
   content.className = "widget__error-content";
   content.innerHTML = html;
