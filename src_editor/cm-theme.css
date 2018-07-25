@@ -3,7 +3,7 @@
 .CodeMirror,
 .source-editor .prerender,
 .source-viewer .prerender {
-  font-size: 18px;
+  font-size: 16px;
   font-family: "Fira Code", "Ubuntu Mono", monospace;
   font-weight: 400;
   line-height: 1.4375;
