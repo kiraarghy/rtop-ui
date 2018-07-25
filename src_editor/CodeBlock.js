@@ -25,15 +25,15 @@ const createErrorWidget = html => {
   content.className = "syntax-error__content";
   content.innerHTML = html;
 
-  return wrapper;
-};
-
-const createSignatureWidget = text => {
-  const wrapper = document.createElement("div");
-  wrapper.className = "";
-  wrapper.appendChild(document.createTextNode(text));
-
-  return wrapper;
+  return {
+    wrapper,
+    options: {
+      coverGutter: true,
+      noHScroll: true,
+      above: false,
+      showIfHidden: false,
+    },
+  };
 };
 
 const createValueWidget = text => {
@@ -41,7 +41,31 @@ const createValueWidget = text => {
   wrapper.className = "widget__value";
   wrapper.appendChild(document.createTextNode(text));
 
-  return wrapper;
+  return {
+    wrapper,
+    options: {
+      coverGutter: false,
+      noHScroll: true,
+      above: false,
+      showIfHidden: false,
+    },
+  };
+};
+
+const createStdoutWidget = text => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "widget__stdout";
+  wrapper.appendChild(document.createTextNode(text));
+
+  return {
+    wrapper,
+    options: {
+      coverGutter: false,
+      noHScroll: false,
+      above: false,
+      showIfHidden: false,
+    },
+  };
 };
 
 class CodeMirror extends Component {
@@ -89,16 +113,13 @@ class CodeMirror extends Component {
           wrapper = createValueWidget(w.content);
         } else if (type === 0 /* Lw_Error */) {
           wrapper = createErrorWidget(w.content);
+        } else if (type === 2 /* Lw_Stdout */) {
+          wrapper = createStdoutWidget(w.content);
         } else {
           return acc;
         }
 
-        editor.addLineWidget(w.line, wrapper, {
-          coverGutter: false,
-          noHScroll: true,
-          above: false,
-          showIfHidden: false,
-        });
+        editor.addLineWidget(w.line, wrapper.wrapper, wrapper.options);
 
         acc.push(wrapper);
         return acc;

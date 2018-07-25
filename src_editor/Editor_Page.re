@@ -5,8 +5,9 @@ module CodeBlock = {
   external reactClass : ReasonReact.reactClass = "default";
 
   type lineWidgetType =
-    | [@bs.as 0] Lw_Error
-    | [@bs.as 1] Lw_Value;
+    | Lw_Error
+    | Lw_Value
+    | Lw_Stdout;
 
   [@bs.deriving abstract]
   type lineWidget = {
@@ -93,7 +94,7 @@ let make = _children => {
     switch (action) {
     | Block_AddWidgets(blockIndex, widgets) =>
       ReasonReact.Update({
-        ...state,
+        /* ...state, */
         blocks:
           state.blocks
           |. Belt.Array.mapWithIndexU((. i, block) =>
@@ -128,18 +129,40 @@ let make = _children => {
                                 (. acc, exeResult) => {
                                   let {buffer: _, executeResult, pos} = exeResult;
                                   let (_, {line}) = pos;
-                                  switch (executeResult.evaluate) {
-                                  | None => acc
-                                  | Some(content) =>
-                                    let w =
-                                      CodeBlock.lineWidget(
-                                        ~typ=Lw_Value,
-                                        ~line,
-                                        ~content,
-                                      );
 
-                                    Belt.Array.concat(acc, [|w|]);
-                                  };
+                                  let evaluate =
+                                    executeResult.evaluate
+                                    |. Belt.Option.map(content =>
+                                         CodeBlock.lineWidget(
+                                           ~typ=Lw_Value,
+                                           ~line,
+                                           ~content,
+                                         )
+                                       );
+
+                                  let stdout =
+                                    executeResult.stdout
+                                    |. Belt.Option.map(content =>
+                                         CodeBlock.lineWidget(
+                                           ~typ=Lw_Stdout,
+                                           ~line,
+                                           ~content,
+                                         )
+                                       );
+
+                                  let finalWidgets =
+                                    [stdout, evaluate]
+                                    |. Belt.List.reduceU(
+                                         [], (. acc2, lineWidget) =>
+                                         switch (lineWidget) {
+                                         | None => acc2
+                                         | Some(lw) => [lw, ...acc2]
+                                         }
+                                       );
+                                  Belt.Array.concat(
+                                    acc,
+                                    finalWidgets |. Belt.List.toArray,
+                                  );
                                 },
                               );
                          resolve(

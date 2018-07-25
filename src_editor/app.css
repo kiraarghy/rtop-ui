@@ -51,4 +51,10 @@ body {
 .widget__value {
   color: #868e96;
 }
+
+.widget__stdout {
+  color: #495057;
+  background-color: #f1f3f5;
+  white-space: pre;
+}
 /* \\\\\\\\\\\\\\\\\\\\\ Wdigets \\\\\\\\\\\\\ */
