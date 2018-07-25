@@ -83,13 +83,18 @@ export default class CodeBlock extends PureComponent {
                 document.createElement("span")
               );
               content.className = "syntax-error__content";
-              content.innerHTML = "syntax error";
+              let doc = cm.getDoc();
+              let getRange = doc.getRange(
+                { line: 15, ch: 1 },
+                { line: 16, ch: 34 }
+              );
+              console.log(getRange);
+              content.innerHTML = getRange;
 
-              cm.addLineWidget(2, wrapper, {
+              cm.addLineWidget(0, wrapper, {
                 coverGutter: true,
                 noHScroll: true,
               });
-              console.log("execute code");
             },
           },
         }}

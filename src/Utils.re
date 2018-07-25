@@ -28,3 +28,8 @@ let splitOnChar = (sep, s) => {
   let tl = r.contents;
   [String.sub(s, 0, j.contents), ...tl];
 };
+
+let listFindOpt = (p, l) =>
+  try (Some(List.find(p, l))) {
+  | Not_found => None
+  };

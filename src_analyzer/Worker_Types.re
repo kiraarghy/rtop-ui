@@ -4,8 +4,14 @@ type singleExecuteResult = {
   stdout: option(string),
 };
 
+type loc = {
+  line: int,
+  col: int,
+  offset: int,
+};
+
 type wholeProgramExecuteResult = {
   buffer: string,
   executeResult: singleExecuteResult,
-  pos: (int, int),
+  pos: (loc, loc),
 };

@@ -110,15 +110,14 @@ describe(
       expect(exe("let a = 1;")) |> toMatchSnapshot
     );
 
-    test("multiple directive in same line", () =>
+    Only.test("multiple directive in same line", () =>
       expect(exe("let a = 1; let b = a + a;")) |> toMatchSnapshot
     );
 
     test("multiple line", () =>
       expect(
         exe(
-          {|
-type tree = Leaf | Node(int, tree, tree);
+          {|type tree = Leaf | Node(int, tree, tree);
 
 let rec sum = (item) => {
   switch (item) {
@@ -134,8 +133,7 @@ let myTree =
     Node(3, Node(5, Leaf, Leaf), Node(7, Leaf, Leaf))
   );
 
-Printf.sprintf("%i", sum(myTree));
-      |},
+Printf.sprintf("%i", sum(myTree));|},
         ),
       )
       |> toMatchSnapshot
