@@ -1,3 +1,12 @@
+let code = "let a = 1 + 1;";
+
+Js.Promise.(
+  Editor_Worker.execute(. code)
+  |> then_(result => resolve(Js.log(result)))
+  |> catch(error => resolve(Js.log(error)))
+  |> ignore
+);
+
 module CodeBlock = {
   [@bs.module "./CodeBlock.js"]
   external reactClass : ReasonReact.reactClass = "default";

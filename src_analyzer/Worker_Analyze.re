@@ -133,5 +133,5 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
     loop(0, {startPos: 0, shouldSkip: true, result: []});
   };
 
-  let execute = parseCommand(~f=tryExecute);
+  let execute = (. code) => parseCommand(~f=tryExecute, code);
 };
