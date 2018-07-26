@@ -72,24 +72,9 @@ type action =
 
 let component = ReasonReact.reducerComponent("Editor_Page");
 
-let make = _children => {
+let make = (~blocks: array(block), _children) => {
   ...component,
-  initialState: () => {
-    blocks: [|
-      B_Code({
-        bc_value: Editor_Loremipsum.code1,
-        bc_firstLineNumber: 1,
-        bc_lines: 10,
-        bc_widgets: [||],
-      }),
-      B_Code({
-        bc_value: Editor_Loremipsum.code2,
-        bc_firstLineNumber: 11,
-        bc_lines: 19,
-        bc_widgets: [||],
-      }),
-    |],
-  },
+  initialState: () => {blocks: blocks},
   reducer: (action, state) =>
     switch (action) {
     | Block_AddWidgets(blockIndex, widgets) =>
