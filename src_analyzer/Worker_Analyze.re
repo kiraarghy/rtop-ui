@@ -56,7 +56,7 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
       | index => index - 1
       };
     let lineStart = lineStartOffsets[index];
-    {line: index, col: offset - lineStart, offset};
+    {line: index, col: offset - lineStart - 1, offset};
   };
   let parseCommand = (~f, code) => {
     let length = String.length(code);
@@ -75,7 +75,7 @@ module Make = (ESig: Worker_Evaluator.EvaluatorSig) => {
             loop(i + 1, {...state, startPos: startPos + 1}) :
             loop(i + 1, state)
         | '\n' =>
-          lineStartOffsets |> Js.Array.push(i + 1) |> ignore;
+          lineStartOffsets |> Js.Array.push(i) |> ignore;
           shouldSkip ?
             loop(i + 1, {...state, startPos: startPos + 1}) :
             loop(i + 1, state);

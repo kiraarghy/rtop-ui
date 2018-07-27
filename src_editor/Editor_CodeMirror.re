@@ -163,6 +163,8 @@ let make =
            },
          );
       state.editor := Some(editor);
+      %bs.raw
+      {|window.editor = editor|};
       ();
     },
   render: ({handle, state: _}) =>
